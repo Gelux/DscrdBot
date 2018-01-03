@@ -6,12 +6,12 @@
 package personaljes.dscrdbot;
 
 import java.text.MessageFormat;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
@@ -23,24 +23,30 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
  */
 public class BotApp extends ListenerAdapter {
 
-    private static final Logger LOGGER = Logger.getLogger(BotApp.class.getName());
-    private static final ConsoleHandler cHandler = new ConsoleHandler();
-
     public static void main(String[] args) {
-        LOGGER.setLevel(Level.ALL);
-        cHandler.setLevel(Level.ALL);
-
-        LOGGER.addHandler(cHandler);
-
+        Log.init();
         try {
-            LOGGER.finer("Iniciando jdaBuilder.");
-            JDA jdaBot = new JDABuilder(AccountType.BOT).setToken("Mzk0OTcyMjE4MzkzNzU1NjQ4.DSQtyg.e22MYrdkWUUakdu_8UK0UzcchOA").buildBlocking();
-            LOGGER.finer("jdaBuilder iniciado.");
+            
+            JDA jdaBot = new JDABuilder(AccountType.BOT).setToken(
+                    "Put your token here").buildBlocking();
+            Log.info("jdaBuilder iniciado.");
 
             jdaBot.addEventListener(new BotApp());
-
+            
+            
+            List<Guild> guilds = jdaBot.getGuilds();
+            int guildsLength = guilds.size();
+            if(guildsLength != 0){
+                Log.info("Bot conectado a: " + guilds.get(0).getName());
+            }else{
+                //Permissions 2113142015
+                String inviteBot = jdaBot.asBot().getInviteUrl(Permission.getPermissions(2113142015));
+                
+                Log.info("Añade el bot visitando este enlace: " + inviteBot);
+            }
+            
         } catch (Exception e) {
-            LOGGER.warning("Error: " + e);
+            Log.warn(e.toString());
         }
 
     }
@@ -50,12 +56,13 @@ public class BotApp extends ListenerAdapter {
         String message = event.getMessage().getContentDisplay();
         MessageChannel channel = event.getChannel();
         User author = event.getAuthor();
-        
-        if(message.startsWith("!")){
+
+        if (message.startsWith("!")) {
             String log = MessageFormat.format("Usuario {0} envia {1}", author.getName(), message);
-            LOGGER.finer(log);
+            Log.info(log);
             String respuesta = message.substring(1);
             channel.sendMessage("El comando que has usado es: " + respuesta + " a que si noob.").queue();
         }
     }
+   
 }
