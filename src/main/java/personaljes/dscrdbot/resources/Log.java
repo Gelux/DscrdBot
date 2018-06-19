@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package personaljes.dscrdbot;
+package personaljes.dscrdbot.resources;
 
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public class Log {
 
     private static Logger logger;
     
-    Log(){
+    public Log(){
         init();
     }
 
@@ -47,7 +47,7 @@ public class Log {
         logger.debug(format, argArray);
     }
 
-    static void init() {
+    public static void init() {
         if (logger != null) {
             return;
         }
@@ -84,7 +84,7 @@ public class Log {
 
 //         set logging level
         
-        logger.setLevel(Level.INFO);
+        logger.setLevel(Level.DEBUG);
         
     }
 }

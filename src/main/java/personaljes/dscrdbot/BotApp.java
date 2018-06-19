@@ -16,6 +16,8 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+import personaljes.dscrdbot.resources.Commands.Command;
+import personaljes.dscrdbot.resources.Log;
 
 /**
  *
@@ -23,12 +25,14 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
  */
 public class BotApp extends ListenerAdapter {
 
+    public static Guild guild;
+
     public static void main(String[] args) {
         Log.init();
         try {
             
             JDA jdaBot = new JDABuilder(AccountType.BOT).setToken(
-                    "Put your token here").buildBlocking();
+                    "Your Token here").buildBlocking();
             Log.info("jdaBuilder iniciado.");
 
             jdaBot.addEventListener(new BotApp());
@@ -38,13 +42,16 @@ public class BotApp extends ListenerAdapter {
             int guildsLength = guilds.size();
             if(guildsLength != 0){
                 Log.info("Bot conectado a: " + guilds.get(0).getName());
+                guild = jdaBot.getGuilds().get(0);
             }else{
                 //Permissions 2113142015
                 String inviteBot = jdaBot.asBot().getInviteUrl(Permission.getPermissions(2113142015));
                 
                 Log.info("Añade el bot visitando este enlace: " + inviteBot);
             }
-            
+
+            //Fill command arraylist
+            Command.init();
         } catch (Exception e) {
             Log.warn(e.toString());
         }
@@ -61,7 +68,31 @@ public class BotApp extends ListenerAdapter {
             String log = MessageFormat.format("Usuario {0} envia {1}", author.getName(), message);
             Log.info(log);
             String respuesta = message.substring(1);
-            channel.sendMessage("El comando que has usado es: " + respuesta + " a que si noob.").queue();
+            String[] cmdarg = message.substring("!".length()).split(" ", 2);
+            String cmd = cmdarg[0];
+            String arg;
+            Log.info(cmdarg[0]);
+            try {
+                arg = cmdarg[1];
+            } catch (IndexOutOfBoundsException e) {
+                arg = null;
+            }
+
+            Log.info(String.valueOf(Command.commandList.size()));
+
+            for (Command command : Command.commandList){
+                Log.debug(String.valueOf(Command.commandList.size()));
+                if(command.compare(cmdarg[0])){
+                    Log.debug(command.getName() + command.getDesc());
+                    command.execute(arg, author, channel, guild);
+                }
+            }
+
+            Log.info("Donete");
+            Log.info(channel.getName());
+            channel.sendMessage("Donete").complete();
+
+            //channel.sendMessage("El comando que has usado es: " + respuesta + " a que si noob.").queue();
         }
     }
    
