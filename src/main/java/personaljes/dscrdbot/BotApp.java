@@ -32,7 +32,7 @@ public class BotApp extends ListenerAdapter {
         try {
             
             JDA jdaBot = new JDABuilder(AccountType.BOT).setToken(
-                    "NDcyODYyMzkwMTE1ODkzMjc4.Dj5jEg.6aDPwfmsurN4n_AIce-0RlshQjo").buildBlocking();
+                    "Your Token Here").buildBlocking();
             Log.info("jdaBuilder iniciado.");
 
             jdaBot.addEventListener(new BotApp());
